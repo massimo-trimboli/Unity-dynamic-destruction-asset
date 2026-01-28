@@ -5,16 +5,16 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 639052219899227217
-    m_Hash: 1314047516
+      ticks: 639052230520681678
+    m_Hash: 2527964179
   m_LockFileStatus:
     m_FilePath: D:/Desktop/projet recherche/Unity-dynamic-destruction-asset/destruction/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 639052219899336718
-    m_Hash: 653707435
+      ticks: 639052230520735292
+    m_Hash: 4192852625
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:
@@ -22,6 +22,85 @@ m_LocalPackages:
 m_ProjectPath: D:/Desktop/projet recherche/Unity-dynamic-destruction-asset/destruction/Packages
 m_EditorVersion: 2023.2.20f1 (0e25a174756c)
 m_ResolvedPackages:
+- packageId: com.dgreenheck.openfracture@https://github.com/dgreenheck/OpenFracture.git
+  testable: 0
+  isDirectDependency: 1
+  version: 1.0.2
+  source: 5
+  resolvedPath: D:\Desktop\projet recherche\Unity-dynamic-destruction-asset\destruction\Library\PackageCache\com.dgreenheck.openfracture@6d0ddff641
+  assetPath: Packages/com.dgreenheck.openfracture
+  name: com.dgreenheck.openfracture
+  displayName: OpenFracture
+  author:
+    name: Dan Greenheck
+    email: dgreenheck@gmail.com
+    url: https://www.unity3d.com
+  category: 
+  type: 
+  description: Open source tool for slicing/fracturing meshes in Unity during runtime
+    or in the editor.
+  errors: []
+  versions:
+    all: []
+    compatible: []
+    recommended: 
+    deprecated: []
+  dependencies:
+  - name: com.unity.test-framework
+    version: 1.1.30
+  - name: com.unity.testtools.codecoverage
+    version: 1.0.1
+  resolvedDependencies:
+  - name: com.unity.test-framework
+    version: 1.3.9
+  - name: com.unity.ext.nunit
+    version: 2.0.5
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  - name: com.unity.testtools.codecoverage
+    version: 1.2.5
+  - name: com.unity.settings-manager
+    version: 2.0.1
+  keywords:
+  - mesh
+  - slice
+  - fracture
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 0
+  isAssetStorePackage: 0
+  datePublishedTicks: 0
+  documentationUrl: 
+  hasRepository: 0
+  repository:
+    type: 
+    url: 
+    revision: 
+    path: 
+  unityLifecycle:
+    version: 
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 6d0ddff64173193f024638c2de2dbeb8a2525965
+    revision: HEAD
+  upmReserved: 
+  assetStore:
+    productId: 
 - packageId: com.unity.collab-proxy@2.11.3
   testable: 0
   isDirectDependency: 1
