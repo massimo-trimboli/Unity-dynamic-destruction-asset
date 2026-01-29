@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class slicerScript : MonoBehaviour
@@ -9,38 +8,75 @@ public class slicerScript : MonoBehaviour
     Vector3 entryPoint;
     Vector3 exitPoint;
 
+    Dictionary<GameObject, Vector3> entryPointsDict = new Dictionary<GameObject, Vector3>();
+
 
     void Start()
     {
+        GetComponent<Collider>().enabled = false;
         plane = new GameObject().transform;
     }
 
-
-    void OnTriggerEnter(Collider collision)
+    void Update()
     {
-        if(collision.gameObject.GetComponent<Slice>() != null)
+        //set up overlapbox
+        Collider[] hits =
+        Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size / 2, transform.rotation);
+
+
+        HashSet<GameObject> currentHash = new HashSet<GameObject>();
+
+        //put each detected sliceable object in a hashset and put its entry point in a dictionary
+        foreach (Collider hit in hits)
         {
-            //entryPoint = collision.transform.localPosition;
-            entryPoint = transform.position;
+            //on enter overlap
+            if (hit.gameObject.GetComponent<Slice>() != null)
+            {
+                //add to hash
+                currentHash.Add(hit.gameObject);
+
+                //add to dictionary with its entry position
+                if (!entryPointsDict.ContainsKey(hit.gameObject))
+                {
+                    //entryPointsDict[hit.gameObject] = transform.position;
+                    entryPointsDict[hit.gameObject] = hit.transform.InverseTransformPoint(transform.position);
+                }
+                print(hit.gameObject);
+            }
+        }
+
+        //look for exits
+        //doing this to itterate through dictionary
+        List<GameObject> keys = new List<GameObject>(entryPointsDict.Keys);
+        foreach (GameObject obj in keys)
+        {
+            //if dictionary has this obj but hash doesn't (not overlapping, exited the collider)
+            if (!currentHash.Contains(obj))
+            {
+                //can get entry pos by looking up dictionary
+                //Vector3 entryPos = entryPointsDict[obj];
+                //Vector3 exitPos = transform.position;
+                Vector3 entryPos = obj.transform.TransformPoint(entryPointsDict[obj]);
+                Vector3 exitPos = transform.position;
+
+                //clear dictionary
+                entryPointsDict.Remove(obj);
+
+                cut(obj, entryPos, exitPos);
+            }
         }
     }
 
-    void OnTriggerExit(Collider collision)
+
+
+    void cut(GameObject obj, Vector3 entryPos, Vector3 exitPos)
     {
-        if (collision.gameObject.GetComponent<Slice>() != null)
-        {
-            //exitPoint = collision.transform.localPosition;
-            exitPoint = transform.position;
+        //this part interacts with OpenFracture
+        var slicer = obj.GetComponent<Slice>();
+        plane.forward = (exitPos - entryPos);
+        var sliceNormal = plane.up;
+        var sliceOrigin = Vector3.Lerp(entryPos, exitPos, .5f);
 
-
-
-            //this part interacts with OpenFracture
-            var slicer = collision.gameObject.GetComponent<Slice>();
-            plane.forward = (exitPoint - entryPoint);
-            var sliceNormal = plane.up;
-            var sliceOrigin = Vector3.Lerp(entryPoint, exitPoint, .5f);
-
-            slicer.ComputeSlice(sliceNormal, sliceOrigin);
-        }
+        slicer.ComputeSlice(sliceNormal, sliceOrigin);
     }
 }

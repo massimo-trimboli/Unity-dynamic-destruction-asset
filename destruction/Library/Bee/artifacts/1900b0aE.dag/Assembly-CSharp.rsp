@@ -387,7 +387,7 @@
 -analyzer:"C:/Program Files/Unity/Hub/Editor/2023.2.20f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 -analyzer:"C:/Program Files/Unity/Hub/Editor/2023.2.20f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll"
 "Assets/scripts/slicerScript.cs"
-"Assets/scripts/slicerScriptRaycast.cs"
+"Assets/scripts/slicerScript_deprecated.cs"
 -langversion:9.0
 
 /deterministic
