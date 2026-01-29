@@ -1,19 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
+
+[RequireComponent(typeof(BoxCollider))]
 public class slicerScript : MonoBehaviour
 {
     Transform plane;
     Vector3 entryPoint;
     Vector3 exitPoint;
+    public bool isTrigger;
 
     Dictionary<GameObject, Vector3> entryPointsDict = new Dictionary<GameObject, Vector3>();
 
 
     void Start()
     {
-        GetComponent<Collider>().enabled = false;
+        Collider col = GetComponent<Collider>();
+        if (isTrigger)
+        {
+            col.enabled = true;
+            col.isTrigger = true;
+        }
+        else
+        {
+            col.enabled = false;
+        }
         plane = new GameObject().transform;
     }
 
@@ -38,7 +51,6 @@ public class slicerScript : MonoBehaviour
                 //add to dictionary with its entry position
                 if (!entryPointsDict.ContainsKey(hit.gameObject))
                 {
-                    //entryPointsDict[hit.gameObject] = transform.position;
                     entryPointsDict[hit.gameObject] = hit.transform.InverseTransformPoint(transform.position);
                 }
                 print(hit.gameObject);
@@ -54,8 +66,6 @@ public class slicerScript : MonoBehaviour
             if (!currentHash.Contains(obj))
             {
                 //can get entry pos by looking up dictionary
-                //Vector3 entryPos = entryPointsDict[obj];
-                //Vector3 exitPos = transform.position;
                 Vector3 entryPos = obj.transform.TransformPoint(entryPointsDict[obj]);
                 Vector3 exitPos = transform.position;
 
