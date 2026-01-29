@@ -5,41 +5,36 @@ using UnityEngine;
 
 public class testScript : MonoBehaviour
 {
-    public GameObject target;
-    public Transform plane;
+    Transform plane;
     Vector3 entryPoint;
     Vector3 exitPoint;
 
 
-    void Update()
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            var slicer = target.GetComponent<Slice>();
-            var sliceNormal = Vector3.right;
-            var sliceOrigin = target.transform.position;
-
-            slicer.ComputeSlice(sliceNormal, sliceOrigin);
-        }
+        plane = new GameObject().transform;
     }
 
 
     void OnTriggerEnter(Collider collision)
     {
-        if(collision.GetComponent<Slice>() != null)
+        if(collision.gameObject.GetComponent<Slice>() != null)
         {
+            //entryPoint = collision.transform.localPosition;
             entryPoint = transform.position;
         }
     }
 
     void OnTriggerExit(Collider collision)
     {
-        if (collision.GetComponent<Slice>() != null)
+        if (collision.gameObject.GetComponent<Slice>() != null)
         {
+            //exitPoint = collision.transform.localPosition;
             exitPoint = transform.position;
 
 
-            //slicing script
+
+            //this part interacts with OpenFracture
             var slicer = collision.gameObject.GetComponent<Slice>();
             plane.forward = (exitPoint - entryPoint);
             var sliceNormal = plane.up;
