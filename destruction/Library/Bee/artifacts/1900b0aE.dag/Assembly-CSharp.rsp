@@ -390,6 +390,7 @@
 "Assets/meshSplicing/scripts/slicerScript_deprecated.cs"
 "Assets/ProSoftBody/ConvexHullCalculator.cs"
 "Assets/ProSoftBody/SoftbodyGenerator.cs"
+"Assets/softBody/softBuddy.cs"
 -langversion:9.0
 
 /deterministic
