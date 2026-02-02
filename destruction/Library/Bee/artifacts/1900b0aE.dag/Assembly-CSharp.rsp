@@ -388,6 +388,8 @@
 -analyzer:"C:/Program Files/Unity/Hub/Editor/2023.2.20f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll"
 "Assets/meshSplicing/scripts/slicerScript.cs"
 "Assets/meshSplicing/scripts/slicerScript_deprecated.cs"
+"Assets/ProSoftBody/ConvexHullCalculator.cs"
+"Assets/ProSoftBody/SoftbodyGenerator.cs"
 -langversion:9.0
 
 /deterministic
