@@ -192,7 +192,7 @@ public class SoftbodyGenerator : MonoBehaviour
         writableMesh.triangles = writableTris;
         originalMeshFilter.mesh = writableMesh;
         // remove duplicated vertex
-        var _optimizedVertex = new List<Vector3>();
+        var _optimizedVertex = new List<Vector3>(); 
 
         // first column = original vertex index , last column = optimized vertex index 
         vertexDictunery = new Dictionary<int, int>();
