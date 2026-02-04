@@ -32,6 +32,8 @@ public class softBuddy : MonoBehaviour
     public float rbMass = 1;
     public float rbDrag = 1;
 
+    public float springForce = 100;
+
 
 
     void Awake()
@@ -68,6 +70,8 @@ public class softBuddy : MonoBehaviour
         }
         // //////////////////////
 
+        //creer nouvell mesh et y assigner l'info de la
+        //mesh originale ou de la mesh optimisée
         mesh2 = new Mesh();
         mesh2.MarkDynamic();
         mesh2.SetVertices(vertexList);
@@ -76,7 +80,9 @@ public class softBuddy : MonoBehaviour
         ogMeshFilter.mesh = mesh2;
 
 
+
         // //////////////////////
+        // autre optimisation
         // this is where we pair up mesh vertexes and physics vertexes
         // if the mesh has any duplicated vertexes, we assign them to the same physics point
         var _optimizedVertex = new List<Vector3>();
@@ -174,8 +180,8 @@ public class softBuddy : MonoBehaviour
 
             //rajouter les 3 cotes du triangle dans la liste
             edgeList.Add(new Vector2Int(point1,point2));
-            edgeList.Add(new Vector2Int(point1, point2));
-            edgeList.Add(new Vector2Int(point1, point2));
+            edgeList.Add(new Vector2Int(point2, point3));
+            edgeList.Add(new Vector2Int(point3, point1));
         }
         //enlever les edge en double
         {
@@ -207,6 +213,25 @@ public class softBuddy : MonoBehaviour
 
             var joint = obj.AddComponent<SpringJoint>();
             joint.connectedBody = target.GetComponent<Rigidbody>();
+
+            joint.autoConfigureConnectedAnchor = false;
+            joint.maxDistance = Vector3.Distance(obj.transform.position, target.transform.position);
+            joint.minDistance = Vector3.Distance(obj.transform.position, target.transform.position);
+
+            joint.spring = 100f;
+        }
+
+        // ad spring for centeer of mass to keep every vertex at a distance to the center
+        foreach(var vert in physicsVertexList)
+        {
+            var joint = vert.AddComponent<SpringJoint>();
+            joint.connectedBody = centerOfMass.GetComponent<Rigidbody>();
+
+            joint.autoConfigureConnectedAnchor = false;
+            joint.maxDistance = Vector3.Distance(vert.transform.position, centerOfMass.transform.position);
+            joint.minDistance = Vector3.Distance(vert.transform.position, centerOfMass.transform.position);
+
+            joint.spring = 100f;
         }
     }
 
