@@ -13,8 +13,8 @@ public class softBuddy : MonoBehaviour
     List<Vector3> vertexList = new List<Vector3>();
     List<Vector3> normalList = new List<Vector3>();
     int[] triArray;
-    Dictionary<int,int> edgeDictionary = new Dictionary<int,int>();
-        //for convex hull optimisation
+    Dictionary<int, int> edgeDictionary = new Dictionary<int, int>();
+    //for convex hull optimisation
     List<Vector3> vertexListOptimised = new List<Vector3>();
     List<Vector3> normalListOptimsed = new List<Vector3>();
     List<int> triListOptimsed;
@@ -27,6 +27,7 @@ public class softBuddy : MonoBehaviour
 
     //public variables
     public bool optimisedReducPoints = true;
+
     public bool rbUseGravity = true;
     public float colliderRadius = 0.1f;
     public float rbMass = 1;
@@ -46,7 +47,7 @@ public class softBuddy : MonoBehaviour
         triArray = ogMeshFilter.mesh.triangles;
 
         // passer de possition locale à position monde
-        for ( int i=0; i < vertexList.Count; i++)
+        for (int i = 0; i < vertexList.Count; i++)
         {
             //je comprends pas entierement la ligne de code mais ca va etre pour plus tard
             vertexList[i] = transform.localToWorldMatrix.MultiplyPoint3x4(vertexList[i]);
@@ -80,51 +81,24 @@ public class softBuddy : MonoBehaviour
         ogMeshFilter.mesh = mesh2;
 
 
-
-        // //////////////////////
-        // autre optimisation
-        // this is where we pair up mesh vertexes and physics vertexes
-        // if the mesh has any duplicated vertexes, we assign them to the same physics point
-        var _optimizedVertex = new List<Vector3>();
-        for(int i = 0; i< vertexList.Count; i++)
-        {
-            bool hasPair = false;
-            for (int j = 0; j < _optimizedVertex.Count; j++)
-            {
-                /*if (vertexList[i] == _optimizedVertex[j])
-                {
-                    hasPair = true;
-                    edgeDictionary.Add(i, j);
-                    break;
-                }*/
-            }
-            if (!hasPair)
-            {
-                _optimizedVertex.Add(vertexList[i]);
-                edgeDictionary.Add(i, _optimizedVertex.Count - 1);
-            }
-        }
-        // //////////////////////
-
-
         //create physicsPoint for each vertex
-        foreach (var vert in _optimizedVertex)
+        foreach (var vert in vertexList)
         {
             //creer objet pour vertex
-            var tempObj = new GameObject("point "+ _optimizedVertex.IndexOf(vert));
-            
+            var tempObj = new GameObject("point " + vertexList.IndexOf(vert));
+
             tempObj.transform.parent = transform;
             tempObj.transform.position = vert;
-            
+
             //rajouter collider
             SphereCollider collider = tempObj.AddComponent<SphereCollider>();
             collider.radius = colliderRadius;
 
             sphereColliderList.Add(collider);
-            
+
             //rajouter rigidbody
             Rigidbody rb = tempObj.AddComponent<Rigidbody>();
-            rb.mass = rbMass / _optimizedVertex.Count;
+            rb.mass = rbMass / vertexList.Count;
             rb.drag = rbDrag;
             rb.useGravity = rbUseGravity;
 
@@ -134,9 +108,9 @@ public class softBuddy : MonoBehaviour
 
 
         //center of mass
-        Vector3 TempCenterOM = new Vector3(0,0,0);
+        Vector3 TempCenterOM = new Vector3(0, 0, 0);
         //position moyenne
-        foreach(var vert in vertexList)
+        foreach (var vert in vertexList)
         {
             TempCenterOM += vert;
         }
@@ -151,7 +125,7 @@ public class softBuddy : MonoBehaviour
             collider.radius = colliderRadius;
             sphereColliderList.Add(collider);
             Rigidbody rb = tempObj.AddComponent<Rigidbody>();
-            rb.mass = rbMass / _optimizedVertex.Count;
+            rb.mass = rbMass / vertexList.Count;
             rb.drag = rbDrag;
             rb.useGravity = rbUseGravity;
 
@@ -160,9 +134,9 @@ public class softBuddy : MonoBehaviour
 
 
         //ignorer collisions entre vertexes
-        foreach(var colider1 in sphereColliderList)
+        foreach (var colider1 in sphereColliderList)
         {
-            foreach(var collider2 in sphereColliderList)
+            foreach (var collider2 in sphereColliderList)
             {
                 Physics.IgnoreCollision(colider1, collider2, true);
             }
@@ -172,24 +146,26 @@ public class softBuddy : MonoBehaviour
         //get les edges
         List<Vector2Int> edgeList = new List<Vector2Int>();
 
-        for(int i = 0; i<triArray.Length; i+=3)
+        for (int i = 0; i < triArray.Length; i += 3)
         {
-            int point1 = edgeDictionary[triArray[i]];
-            int point2 = edgeDictionary[triArray[i+1]];
-            int point3 = edgeDictionary[triArray[i+2]];
+            int point1 = triArray[i];
+            int point2 = triArray[i + 1];
+            int point3 = triArray[i + 2];
+
+            //print("i:" + i + " = " + triArray[i]+" = "+ edgeDictionary[triArray[i]]);
 
             //rajouter les 3 cotes du triangle dans la liste
-            edgeList.Add(new Vector2Int(point1,point2));
+            edgeList.Add(new Vector2Int(point1, point2));
             edgeList.Add(new Vector2Int(point2, point3));
             edgeList.Add(new Vector2Int(point3, point1));
         }
         //enlever les edge en double
         {
             List<Vector2Int> tempList = new List<Vector2Int>();
-            foreach(var edge in edgeList)
+            foreach (var edge in edgeList)
             {
                 bool inList = false;
-                foreach(var edge2 in tempList)
+                foreach (var edge2 in tempList)
                 {
                     if (edge == edge2)
                     {
@@ -206,7 +182,7 @@ public class softBuddy : MonoBehaviour
         }
 
         //rajouter springs pour chaque edge
-        foreach(var edge in edgeList)
+        foreach (var edge in edgeList)
         {
             GameObject obj = physicsVertexList[edge.x];
             GameObject target = physicsVertexList[edge.y];
@@ -222,7 +198,7 @@ public class softBuddy : MonoBehaviour
         }
 
         // ad spring for centeer of mass to keep every vertex at a distance to the center
-        foreach(var vert in physicsVertexList)
+        foreach (var vert in physicsVertexList)
         {
             var joint = vert.AddComponent<SpringJoint>();
             joint.connectedBody = centerOfMass.GetComponent<Rigidbody>();
@@ -231,13 +207,13 @@ public class softBuddy : MonoBehaviour
             joint.maxDistance = Vector3.Distance(vert.transform.position, centerOfMass.transform.position);
             joint.minDistance = Vector3.Distance(vert.transform.position, centerOfMass.transform.position);
 
-            joint.spring = 100f;
+            joint.spring = springForce;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

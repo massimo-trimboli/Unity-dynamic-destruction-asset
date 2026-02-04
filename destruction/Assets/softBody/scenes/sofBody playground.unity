@@ -725,11 +725,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bc43abbaffb2124890720fdc76da026, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optimisedReducPoints: 1
+  optimisedReducPoints: 0
   rbUseGravity: 1
   colliderRadius: 0.1
   rbMass: 1
   rbDrag: 1
+  springForce: 50
 --- !u!1001 &1310029513
 PrefabInstance:
   m_ObjectHideFlags: 0
