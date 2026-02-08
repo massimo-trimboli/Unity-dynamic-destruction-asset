@@ -13,7 +13,6 @@ public class softBuddy : MonoBehaviour
     List<Vector3> vertexList = new List<Vector3>();
     List<Vector3> normalList = new List<Vector3>();
     int[] triArray;
-    Dictionary<int, int> edgeDictionary = new Dictionary<int, int>();
     //for convex hull optimisation
     List<Vector3> vertexListOptimised = new List<Vector3>();
     List<Vector3> normalListOptimsed = new List<Vector3>();
@@ -33,7 +32,7 @@ public class softBuddy : MonoBehaviour
     public float rbMass = 1;
     public float rbDrag = 1;
 
-    public float springForce = 100;
+    public float springForce = 50;
 
 
 
@@ -200,20 +199,40 @@ public class softBuddy : MonoBehaviour
         // ad spring for centeer of mass to keep every vertex at a distance to the center
         foreach (var vert in physicsVertexList)
         {
-            var joint = vert.AddComponent<SpringJoint>();
+            /*var joint = vert.AddComponent<SpringJoint>();
             joint.connectedBody = centerOfMass.GetComponent<Rigidbody>();
 
             joint.autoConfigureConnectedAnchor = false;
             joint.maxDistance = Vector3.Distance(vert.transform.position, centerOfMass.transform.position);
             joint.minDistance = Vector3.Distance(vert.transform.position, centerOfMass.transform.position);
 
-            joint.spring = springForce;
+            joint.spring = springForce;*/
+
+            var joint = vert.AddComponent<ConfigurableJoint>();
+            joint.connectedBody = centerOfMass.GetComponent<Rigidbody>();
+
+            joint.autoConfigureConnectedAnchor = true;
+            joint.xMotion = ConfigurableJointMotion.Limited;
+            joint.yMotion = ConfigurableJointMotion.Limited;
+            joint.zMotion = ConfigurableJointMotion.Limited;
+
+            joint.angularXMotion = ConfigurableJointMotion.Limited;
+            joint.angularYMotion = ConfigurableJointMotion.Limited;
+            joint.angularZMotion = ConfigurableJointMotion.Limited;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        var tempVertexList = new Vector3[physicsVertexList.Count];
+        for (int i = 0; i<tempVertexList.Length; i++)
+        {
+            tempVertexList[i] = physicsVertexList[i].transform.localPosition;
+        }
+        ogMeshFilter.mesh.vertices = tempVertexList;
+        ogMeshFilter.mesh.RecalculateBounds();
+        ogMeshFilter.mesh.RecalculateTangents();
+        ogMeshFilter.mesh.RecalculateNormals();
     }
 }
