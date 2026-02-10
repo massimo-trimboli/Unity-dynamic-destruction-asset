@@ -1,4 +1,4 @@
-using GK;
+ï»¿using GK;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +14,9 @@ public class softBuddy : MonoBehaviour
     List<Vector3> normalList = new List<Vector3>();
     int[] triArray;
     //for convex hull optimisation
-    List<Vector3> vertexListForOptimisation = new List<Vector3>();
-    List<Vector3> normalListForOptimisation = new List<Vector3>();
-    List<int> triListForOptimisation;
-
-    Dictionary<int,int> vertexDictionary = new Dictionary<int,int>();
+    List<Vector3> vertexListOptimised = new List<Vector3>();
+    List<Vector3> normalListOptimsed = new List<Vector3>();
+    List<int> triListOptimsed;
 
 
     List<SphereCollider> sphereColliderList = new List<SphereCollider>();
@@ -27,7 +25,7 @@ public class softBuddy : MonoBehaviour
 
 
     //public variables
-    public bool optimisedReducPoints = true;
+    /*public */bool optimisedReducPoints = false;
 
     public bool rbUseGravity = true;
     public float colliderRadius = 0.1f;
@@ -48,33 +46,15 @@ public class softBuddy : MonoBehaviour
 
         triArray = ogMeshFilter.mesh.triangles;
 
-        // passer de possition locale à position monde
+        // passer de possition locale Ã  position monde
         for (int i = 0; i < vertexList.Count; i++)
         {
             //je comprends pas entierement la ligne de code mais ca va etre pour plus tard
             vertexList[i] = transform.localToWorldMatrix.MultiplyPoint3x4(vertexList[i]);
         }
 
-        // //////////////////////
-        //optimisations utilisant le script ConvexHullCalculator par Eshan Moradi
-        // https://github.com/ehsanwwe/Unity-SoftBody-physics/blob/main/Assets/ProSoftBody/ConvexHullCalculator.cs
-        if (optimisedReducPoints)
-        {
-            new ConvexHullCalculator().GenerateHull(
-                vertexList,
-                false,
-                ref vertexListForOptimisation,
-                ref triListForOptimisation,
-                ref normalListForOptimisation
-            );
-            vertexList = vertexListForOptimisation;
-            normalList = normalListForOptimisation;
-            triArray = triListForOptimisation.ToArray();
-        }
-        // //////////////////////
-
         //creer nouvell mesh et y assigner l'info de la
-        //mesh originale ou de la mesh optimisée
+        //mesh originale ou de la mesh optimisÃ©e
         mesh2 = new Mesh();
         mesh2.MarkDynamic();
         mesh2.SetVertices(vertexList);
@@ -83,43 +63,11 @@ public class softBuddy : MonoBehaviour
         ogMeshFilter.mesh = mesh2;
 
 
-        // //////////////////////
-        // this part is necessary in case we use the optimised mesh
-        // key = og vertex, corresponds to the mesh
-        // value = optimised vertex, become the physics points
-        List<Vector3> optimisedVertexList = new List<Vector3>();
-        for(int i = 0; i<vertexList.Count; i++)
-        {
-            bool isInList = false;
-
-            if(optimisedVertexList.Count > 0)
-            {
-                for (int j = 0; j < optimisedVertexList.Count; j++)
-                {
-                    if (vertexList[i] == optimisedVertexList[j])
-                    {
-                    isInList = true;
-                    vertexDictionary.Add(i, j);
-                    break;
-                    }
-                }
-            }
-
-            if (!isInList)
-            {
-                optimisedVertexList.Add(vertexList[i]);
-                vertexDictionary.Add(i, optimisedVertexList.Count - 1);
-            }
-        }
-        print($"vertexList = {vertexList.Count}\n optimisedVertexList = {optimisedVertexList.Count}");
-        // //////////////////////
-
-
         //create physicsPoint for each vertex
-        foreach (var vert in optimisedVertexList)
+        foreach (var vert in vertexList)
         {
             //creer objet pour vertex
-            var tempObj = new GameObject("point " + optimisedVertexList.IndexOf(vert));
+            var tempObj = new GameObject("point " + vertexList.IndexOf(vert));
 
             tempObj.transform.parent = transform;
             tempObj.transform.position = vert;
@@ -132,7 +80,7 @@ public class softBuddy : MonoBehaviour
 
             //rajouter rigidbody
             Rigidbody rb = tempObj.AddComponent<Rigidbody>();
-            rb.mass = rbMass / optimisedVertexList.Count;
+            rb.mass = rbMass / vertexList.Count;
             rb.drag = rbDrag;
             rb.useGravity = rbUseGravity;
 
@@ -144,11 +92,11 @@ public class softBuddy : MonoBehaviour
         //center of mass
         Vector3 TempCenterOM = new Vector3(0, 0, 0);
         //position moyenne
-        foreach (var vert in optimisedVertexList)
+        foreach (var vert in vertexList)
         {
             TempCenterOM += vert;
         }
-        TempCenterOM = TempCenterOM / optimisedVertexList.Count;
+        TempCenterOM = TempCenterOM / vertexList.Count;
         {
             var tempObj = new GameObject("centerOfMass");
             tempObj.transform.parent = transform;
@@ -159,7 +107,7 @@ public class softBuddy : MonoBehaviour
             collider.radius = colliderRadius;
             sphereColliderList.Add(collider);
             Rigidbody rb = tempObj.AddComponent<Rigidbody>();
-            rb.mass = rbMass / optimisedVertexList.Count;
+            rb.mass = rbMass / vertexList.Count;
             rb.drag = rbDrag;
             rb.useGravity = rbUseGravity;
 
@@ -182,11 +130,11 @@ public class softBuddy : MonoBehaviour
 
         for (int i = 0; i < triArray.Length; i += 3)
         {
-            int point1 = vertexDictionary[triArray[i]];
-            int point2 = vertexDictionary[triArray[i+1]];
-            int point3 = vertexDictionary[triArray[i + 2]];
+            int point1 = triArray[i];
+            int point2 = triArray[i + 1];
+            int point3 = triArray[i + 2];
 
-            //print($"i: {i} = {triArray[i]} = {vertexDictionary[triArray[i]]}");
+            //print("i:" + i + " = " + triArray[i]+" = "+ edgeDictionary[triArray[i]]);
 
             //rajouter les 3 cotes du triangle dans la liste
             edgeList.Add(new Vector2Int(point1, point2));
@@ -225,8 +173,8 @@ public class softBuddy : MonoBehaviour
             joint.connectedBody = target.GetComponent<Rigidbody>();
 
             joint.autoConfigureConnectedAnchor = false;
-            joint.maxDistance = Vector3.Distance(obj.transform.position, target.transform.position)*1.05f;
-            joint.minDistance = Vector3.Distance(obj.transform.position, target.transform.position)*0.95f;
+            joint.maxDistance = Vector3.Distance(obj.transform.position, target.transform.position);
+            joint.minDistance = Vector3.Distance(obj.transform.position, target.transform.position);
 
             joint.spring = springForce;
             joint.damper = springDamper;
@@ -235,15 +183,6 @@ public class softBuddy : MonoBehaviour
         // ad spring for centeer of mass to keep every vertex at a distance to the center
         foreach (var vert in physicsVertexList)
         {
-            /*var joint = vert.AddComponent<SpringJoint>();
-            joint.connectedBody = centerOfMass.GetComponent<Rigidbody>();
-
-            joint.autoConfigureConnectedAnchor = false;
-            joint.maxDistance = Vector3.Distance(vert.transform.position, centerOfMass.transform.position);
-            joint.minDistance = Vector3.Distance(vert.transform.position, centerOfMass.transform.position);
-
-            joint.spring = springForce;*/
-
             var joint = vert.AddComponent<ConfigurableJoint>();
             joint.connectedBody = centerOfMass.GetComponent<Rigidbody>();
 
@@ -251,10 +190,6 @@ public class softBuddy : MonoBehaviour
             joint.xMotion = ConfigurableJointMotion.Limited;
             joint.yMotion = ConfigurableJointMotion.Limited;
             joint.zMotion = ConfigurableJointMotion.Limited;
-
-            //SoftJointLimit limit = new SoftJointLimit();
-            //limit.limit = Vector3.Distance(joint.transform.position, centerOfMass.transform.position);
-            //joint.linearLimit = limit;
 
             joint.angularXMotion = ConfigurableJointMotion.Limited;
             joint.angularYMotion = ConfigurableJointMotion.Limited;
@@ -265,10 +200,10 @@ public class softBuddy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var tempVertexList = new Vector3[ogMeshFilter.mesh.vertices.Length];
-        for (int i = 0; i<tempVertexList.Length; i++)
+        var tempVertexList = new Vector3[physicsVertexList.Count];
+        for (int i = 0; i < tempVertexList.Length; i++)
         {
-            tempVertexList[i] = physicsVertexList[vertexDictionary[i]].transform.localPosition;
+            tempVertexList[i] = physicsVertexList[i].transform.localPosition;
         }
         ogMeshFilter.mesh.vertices = tempVertexList;
         ogMeshFilter.mesh.RecalculateBounds();
