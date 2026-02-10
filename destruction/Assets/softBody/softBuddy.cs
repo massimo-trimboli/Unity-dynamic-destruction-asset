@@ -25,8 +25,6 @@ public class softBuddy : MonoBehaviour
 
 
     //public variables
-    /*public */bool optimisedReducPoints = false;
-
     public bool rbUseGravity = true;
     public float colliderRadius = 0.1f;
     public float rbMass = 1;
