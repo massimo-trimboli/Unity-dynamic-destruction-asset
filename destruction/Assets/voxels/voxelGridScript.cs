@@ -1,40 +1,45 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
+[RequireComponent(typeof(MeshCollider))]
 public class voxelGridScript : MonoBehaviour
 {
     public float sizeOfVoxels = 1;
+
+    public enum voxeliseOptions {combine, continuous, destructible }
+    public voxeliseOptions voxeliseOption;
+
+    public bool hasRigidBody;
 
 
 
     void Start()
     {
-        Bounds bound = GetComponent<MeshRenderer>().bounds;
+        GetComponent<MeshCollider>().convex = false;
+        voxelise(gameObject, sizeOfVoxels, voxeliseOption);
 
-        /* ///////////////////////////////////////////////////////////////////////////////////
-        //this whole part is just for visualisation
-        GameObject boundingBox = new GameObject("boundingBox");
-        boundingBox.AddComponent<BoxCollider>();
-        boundingBox.layer = 2; // ignore raycasts
 
-        boundingBox.transform.position = bound.center;
-        boundingBox.transform.localScale = bound.size;
-        ///////////////////////////////////////////////////////////////////////////////////////
-        // */
-
-        voxelise(gameObject, sizeOfVoxels);
+        Invoke("addRb", 0.25f);
+    }
+    void addRb()
+    {
+        if(hasRigidBody) gameObject.AddComponent<Rigidbody>();
     }
 
 
-
-    public static void voxelise(GameObject targetObject, float sizeOfVoxels)
+    public static void voxelise(GameObject targetObject, float sizeOfVoxels, voxeliseOptions voxeliseOption)
     {
+        string option = voxeliseOption.ToString();
+
+
         Bounds bound = targetObject.GetComponent<MeshRenderer>().bounds;
 
         List<GameObject> cubeGrid = voxelCreateGrid(bound, sizeOfVoxels);
-        voxelFillGrid(targetObject, cubeGrid);
+        voxelFillGrid(targetObject, cubeGrid, option);
     }
 
 
@@ -88,7 +93,7 @@ public class voxelGridScript : MonoBehaviour
         return _tempList;
     }
 
-    static void voxelFillGrid(GameObject target, List<GameObject> grid)
+    static void voxelFillGrid(GameObject target, List<GameObject> grid, string option)
     {
         List<GameObject> _tempList = new List<GameObject>();
 
@@ -115,6 +120,16 @@ public class voxelGridScript : MonoBehaviour
                 Destroy(block);
             }
         }
-        print(_tempList.Count);
+
+        if (option == "combine")
+        {
+            target.GetComponent<MeshFilter>().mesh.Clear();
+            target.GetComponent<MeshCollider>().convex = true;
+            foreach (GameObject block in _tempList)
+            {
+                block.transform.parent = target.transform;
+                Destroy(block.GetComponent<Collider>());
+            }
+        }
     }
 }
