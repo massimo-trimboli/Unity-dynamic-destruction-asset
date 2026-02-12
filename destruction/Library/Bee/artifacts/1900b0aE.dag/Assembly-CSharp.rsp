@@ -392,6 +392,7 @@
 "Assets/ProSoftBody/SoftbodyGenerator.cs"
 "Assets/softBody/grabDependancyScript.cs"
 "Assets/softBody/softBuddy.cs"
+"Assets/voxels/voxelGridScript.cs"
 -langversion:9.0
 
 /deterministic
