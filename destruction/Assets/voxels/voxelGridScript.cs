@@ -1,28 +1,43 @@
+using OpenCover.Framework.Model;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+
 
 [RequireComponent(typeof(MeshCollider))]
 public class voxelGridScript : MonoBehaviour
 {
+    [HideInInspector]
+    public List<GameObject> gridList;
+
+
+    [Tooltip("smaller values make for more acurate results but worse performance")]
     public float sizeOfVoxels = 1;
-
-    public enum voxeliseOptions {combine, continuous, destructible }
-    public voxeliseOptions voxeliseOption;
-
+    public bool voxeliseOnStart;
+    [Tooltip("if object has a rigidbody at start, it doesnt work so if you want to modify properties of rigidbody, edit the 'addRB' method")]
     public bool hasRigidBody;
+
+    public enum voxeliseOptions {combine, explode, destructible }
+    public voxeliseOptions voxeliseOption;
+    public float explodeForce = 0;
+    static float explodeForceStatic;
+
 
 
 
     void Start()
     {
-        GetComponent<MeshCollider>().convex = false;
-        voxelise(gameObject, sizeOfVoxels, voxeliseOption);
+        if(voxeliseOnStart)
+            callVoxelise();
+    }
+    public void callVoxelise()
+    {
+        if (voxeliseOption == voxeliseOptions.explode)
+            explodeForceStatic = explodeForce;
 
-
+        voxelise(gameObject, sizeOfVoxels, voxeliseOption, ref gridList);
         Invoke("addRb", 0.25f);
     }
     void addRb()
@@ -31,15 +46,19 @@ public class voxelGridScript : MonoBehaviour
     }
 
 
-    public static void voxelise(GameObject targetObject, float sizeOfVoxels, voxeliseOptions voxeliseOption)
+
+    static void voxelise(GameObject targetObject, float sizeOfVoxels, voxeliseOptions voxeliseOption, ref List<GameObject> gridList)
     {
-        string option = voxeliseOption.ToString();
+        //collider can be convex for physics purposes but a convex mesh will mess with generation of voxels
+        targetObject.GetComponent<MeshCollider>().convex = false;
 
-
+        //create the grid
         Bounds bound = targetObject.GetComponent<MeshRenderer>().bounds;
+        gridList = voxelCreateGrid(bound, sizeOfVoxels);
 
-        List<GameObject> cubeGrid = voxelCreateGrid(bound, sizeOfVoxels);
-        voxelFillGrid(targetObject, cubeGrid, option);
+        //loop through grid
+        string option = voxeliseOption.ToString();
+        voxelFillGrid(targetObject, ref gridList, option);
     }
 
 
@@ -93,9 +112,9 @@ public class voxelGridScript : MonoBehaviour
         return _tempList;
     }
 
-    static void voxelFillGrid(GameObject target, List<GameObject> grid, string option)
+    static void voxelFillGrid(GameObject target, ref List<GameObject> grid, string option)
     {
-        List<GameObject> _tempList = new List<GameObject>();
+        List<GameObject> voxels = new List<GameObject>();
 
 
         foreach (GameObject block in grid)
@@ -105,6 +124,7 @@ public class voxelGridScript : MonoBehaviour
             Physics.OverlapBox(block.transform.position,
                 block.GetComponent<MeshRenderer>().bounds.extents,
                 block.transform.rotation);
+
             bool isTouchModel = false;
             foreach (Collider collision in collisions)
             {
@@ -113,7 +133,7 @@ public class voxelGridScript : MonoBehaviour
 
             if (isTouchModel)
             {
-                _tempList.Add(block);
+                voxels.Add(block);
             }
             else
             {
@@ -124,12 +144,35 @@ public class voxelGridScript : MonoBehaviour
         if (option == "combine")
         {
             target.GetComponent<MeshFilter>().mesh.Clear();
-            target.GetComponent<MeshCollider>().convex = true;
-            foreach (GameObject block in _tempList)
+            //target.GetComponent<MeshCollider>().convex = true;
+            Destroy(target.GetComponent<MeshCollider>());
+            foreach (GameObject block in voxels)
             {
                 block.transform.parent = target.transform;
-                Destroy(block.GetComponent<Collider>());
+                //Destroy(block.GetComponent<Collider>());
             }
         }
+        else if (option == "explode")
+        {
+            Destroy(target);
+
+            Vector3 centerOM = Vector3.zero;
+            foreach (GameObject block in voxels)
+            {
+                centerOM += block.transform.position;
+            }
+            centerOM = centerOM / voxels.Count;
+
+            // have blocks explode from center
+            foreach (GameObject block in voxels)
+            {
+                Rigidbody bRB = block.AddComponent<Rigidbody>();
+                Vector3 forceDirection = block.transform.position - centerOM;
+                bRB.velocity = forceDirection.normalized * explodeForceStatic;
+            }
+        }
+
+        //assign list
+        grid = voxels;
     }
 }
