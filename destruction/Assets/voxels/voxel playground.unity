@@ -438,7 +438,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cef2fb0fa59c36042aaf722a705179de, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.4740429
+      value: 9.94
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cef2fb0fa59c36042aaf722a705179de, type: 3}
       propertyPath: m_LocalPosition.z
@@ -482,39 +482,14 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cef2fb0fa59c36042aaf722a705179de, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1422230155}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cef2fb0fa59c36042aaf722a705179de, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1422230159}
+      addedObject: {fileID: 1422230163}
   m_SourcePrefab: {fileID: 100100000, guid: cef2fb0fa59c36042aaf722a705179de, type: 3}
 --- !u!1 &1422230145 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: cef2fb0fa59c36042aaf722a705179de, type: 3}
   m_PrefabInstance: {fileID: 1056304810}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &1422230155
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1422230145}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -9176387285341337083, guid: cef2fb0fa59c36042aaf722a705179de, type: 3}
---- !u!114 &1422230159
+--- !u!114 &1422230163
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -527,11 +502,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridList: []
-  sizeOfVoxels: 1
-  voxeliseOnStart: 0
-  hasRigidBody: 0
-  voxeliseOption: 0
-  explodeForce: 0
+  resolutionBy: 0
+  cubeAmount: 15
+  amountAlongAxis: 0
+  cubeSize: 1
+  voxeliseOnStart: 1
+  hasRigidBody: 1
+  voxeliseOption: 2
+  explodeForce: 30
+  useBreakforce: 0
+  breakForce: 250
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

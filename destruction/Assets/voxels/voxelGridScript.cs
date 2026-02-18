@@ -6,43 +6,89 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 
-[RequireComponent(typeof(MeshCollider))]
+//[RequireComponent(typeof(MeshCollider))]
 public class voxelGridScript : MonoBehaviour
 {
     [HideInInspector]
     public List<GameObject> gridList;
 
+    
+    public enum resMethod { cubeAmount, cubeSize}
+    [Header("resolution options")]
+    public resMethod resolutionBy = resMethod.cubeAmount;
+    public int cubeAmount = 15;
+    public enum axis { x, y, z }
+    public axis amountAlongAxis;
+    public float cubeSize = 1;
 
-    [Tooltip("smaller values make for more acurate results but worse performance")]
-    public float sizeOfVoxels = 1;
-    public bool voxeliseOnStart;
+    float sizeOfVoxels = 1;
+    [Space(20)]
+
+    [Header("miscelaneous options")]
+    public bool voxeliseOnStart = true;
     [Tooltip("if object has a rigidbody at start, it doesnt work so if you want to modify properties of rigidbody, edit the 'addRB' method")]
     public bool hasRigidBody;
 
     public enum voxeliseOptions {combine, explode, destructible }
+    [Header("voxelise options")]
     public voxeliseOptions voxeliseOption;
-    public float explodeForce = 0;
-    static float explodeForceStatic;
+    [Header("voxelise option:explode properties")]
+    public float explodeForce = 10;
+    [Header("voxelise option:destructible - properties")]
+    public bool useBreakforce = true;
+    public float breakForce = 250;
 
 
 
 
     void Start()
     {
-        if(voxeliseOnStart)
+        if (voxeliseOnStart)
             callVoxelise();
     }
     public void callVoxelise()
     {
-        if (voxeliseOption == voxeliseOptions.explode)
-            explodeForceStatic = explodeForce;
+        if (GetComponent<MeshCollider>() == null) gameObject.AddComponent<MeshCollider>();
+
+        setSizeOfVoxels();
 
         voxelise(gameObject, sizeOfVoxels, voxeliseOption, ref gridList);
-        Invoke("addRb", 0.25f);
+        Invoke("addRb", .25f);
     }
     void addRb()
     {
-        if(hasRigidBody) gameObject.AddComponent<Rigidbody>();
+        if(hasRigidBody)
+        {
+            if(voxeliseOption != voxeliseOptions.destructible)
+            {
+                gameObject.AddComponent<Rigidbody>();
+            }
+        }
+    }
+    void setSizeOfVoxels()
+    {
+        if(resolutionBy == resMethod.cubeAmount)
+        {
+            if(amountAlongAxis == axis.x)
+            {
+                Bounds bund = GetComponent<MeshRenderer>().bounds;
+                sizeOfVoxels = bund.size.x / cubeAmount;
+            }
+            else if (amountAlongAxis == axis.y)
+            {
+                Bounds bund = GetComponent<MeshRenderer>().bounds;
+                sizeOfVoxels = bund.size.y / cubeAmount;
+            }
+            else if (amountAlongAxis == axis.z)
+            {
+                Bounds bund = GetComponent<MeshRenderer>().bounds;
+                sizeOfVoxels = bund.size.z / cubeAmount;
+            }
+        }
+        else if (resolutionBy == resMethod.cubeSize)
+        {
+            sizeOfVoxels = cubeSize;
+        }
     }
 
 
@@ -154,6 +200,8 @@ public class voxelGridScript : MonoBehaviour
         }
         else if (option == "explode")
         {
+            float explodeForce = target.GetComponent<voxelGridScript>().explodeForce;
+
             Destroy(target);
 
             Vector3 centerOM = Vector3.zero;
@@ -168,11 +216,50 @@ public class voxelGridScript : MonoBehaviour
             {
                 Rigidbody bRB = block.AddComponent<Rigidbody>();
                 Vector3 forceDirection = block.transform.position - centerOM;
-                bRB.velocity = forceDirection.normalized * explodeForceStatic;
+                bRB.velocity = forceDirection.normalized * explodeForce;
             }
+        }
+        else if (option == "destructible")
+        {
+            target.GetComponent<MeshFilter>().mesh.Clear();
+            //target.GetComponent<MeshCollider>().convex = true;
+            Destroy(target.GetComponent<MeshCollider>());
+            foreach (GameObject block in voxels)
+            {
+                block.transform.parent = target.transform;
+
+                voxelDestructionScript childScript = block.AddComponent<voxelDestructionScript>();
+                //childScript.cubes = voxels;
+            }
+            voxelDestructionScript parentScript = target.AddComponent<voxelDestructionScript>();
+            parentScript.cubes = voxels;
+            parentScript.isParent = true;
         }
 
         //assign list
         grid = voxels;
+    }
+
+    static void explode(GameObject target, List<GameObject> voxels)
+    {
+        float explodeForce = target.GetComponent<voxelGridScript>().explodeForce;
+
+        Destroy(target);
+
+        Vector3 centerOM = Vector3.zero;
+        foreach (GameObject block in voxels)
+        {
+            block.transform.parent = null;
+            centerOM += block.transform.position;
+        }
+        centerOM = centerOM / voxels.Count;
+
+        // have blocks explode from center
+        foreach (GameObject block in voxels)
+        {
+            Rigidbody bRB = block.AddComponent<Rigidbody>();
+            Vector3 forceDirection = block.transform.position - centerOM;
+            bRB.velocity = forceDirection.normalized * explodeForce;
+        }
     }
 }
