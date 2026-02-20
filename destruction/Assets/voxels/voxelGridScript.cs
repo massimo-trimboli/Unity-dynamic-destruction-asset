@@ -2,6 +2,7 @@ using OpenCover.Framework.Model;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
@@ -43,6 +44,9 @@ public class voxelGridScript : MonoBehaviour
 
     void Start()
     {
+        if (GetComponent<Rigidbody>())
+            Debug.LogError("voxelGridScripit does not support having a RigidBody component on initialization");
+
         if (voxeliseOnStart)
             callVoxelise();
     }

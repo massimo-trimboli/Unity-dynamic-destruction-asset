@@ -510,7 +510,7 @@ MonoBehaviour:
   hasRigidBody: 1
   voxeliseOption: 2
   explodeForce: 30
-  useBreakforce: 0
+  useBreakforce: 1
   breakForce: 250
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
