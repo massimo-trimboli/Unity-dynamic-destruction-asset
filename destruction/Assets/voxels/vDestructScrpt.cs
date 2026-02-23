@@ -5,7 +5,6 @@ using UnityEngine;
 public class vDestructScrpt : MonoBehaviour
 {
     public bool isParent = false;
-    [HideInInspector]
     public voxelScript voxelScriptRef;
 
     public List<GameObject> cubes;

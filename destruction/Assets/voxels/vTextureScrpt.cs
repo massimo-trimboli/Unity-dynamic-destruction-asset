@@ -8,21 +8,30 @@ public class vTextureScrpt : MonoBehaviour
     public bool applyColorToVoxels = true;
     public Material material;
 
-    Texture texture;
+    Texture2D texture;
     List<GameObject> cubes;
     Dictionary<int, Color> colors = new Dictionary<int, Color>();
 
 
 
-    // Start is called before the first frame update
     public void applyColor(List<GameObject> voxelList)
     {
         if (applyColorToVoxels)
         {
-            texture = material.mainTexture;
-            cubes = voxelList;
+            GetComponent<MeshRenderer>().material = material;
+            texture = (Texture2D)material.mainTexture;
+            if (texture == null)
+            {
+                Debug.LogError("Texture is null or not Texture2D");
+                return;
+            }
+            if (!texture.isReadable)
+                Debug.LogError("make sure your texture is readable");
 
+            /////////////////
+            cubes = voxelList;
             getColors();
+            setColors();
         }
     }
 
@@ -31,16 +40,26 @@ public class vTextureScrpt : MonoBehaviour
         for(int i = 0; i < cubes.Count; i++)
         {
             Vector3 originPos = cubes[i].transform.position;
-            Vector3 point = GetComponent<MeshCollider>().ClosestPoint(cubes[i].transform.position);
-
             RaycastHit hit;
             Physics.Raycast(
                 cubes[i].transform.position,
-                point - originPos,
+                transform.position - originPos,
                 out hit
                 );
 
-            print(hit.textureCoord);
+            Color color = texture.GetPixelBilinear(hit.textureCoord.x, hit.textureCoord.y);
+            colors[i] = color;
+        }
+    }
+
+    void setColors()
+    {
+        for (int i = 0; i < cubes.Count; i++)
+        {
+            Material mat = new Material(material.shader);
+            mat.color = colors[i];
+
+            cubes[i].GetComponent<MeshRenderer>().material = mat;
         }
     }
 }

@@ -390,7 +390,6 @@
 "Assets/meshSplicing/scripts/slicerScript_deprecated.cs"
 "Assets/ProSoftBody/ConvexHullCalculator.cs"
 "Assets/ProSoftBody/SoftbodyGenerator.cs"
-"Assets/softBody/grabDependancyScript.cs"
 "Assets/softBody/softBuddy.cs"
 "Assets/voxels/vDestructScrpt.cs"
 "Assets/voxels/voxelScript.cs"

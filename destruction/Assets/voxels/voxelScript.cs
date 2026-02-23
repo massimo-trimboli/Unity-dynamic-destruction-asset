@@ -10,6 +10,7 @@ using static UnityEngine.GraphicsBuffer;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
+[RequireComponent(typeof(vTextureScrpt))]
 public class voxelScript : MonoBehaviour
 {
     [HideInInspector]
@@ -192,6 +193,7 @@ public class voxelScript : MonoBehaviour
 
     static void applyOptions(GameObject target, ref List<GameObject> voxels, string option)
     {
+        print("yoohoo");
         if (option == "combine")
         {
             GameObject parent = new GameObject($"{target.name}_voxelised");
