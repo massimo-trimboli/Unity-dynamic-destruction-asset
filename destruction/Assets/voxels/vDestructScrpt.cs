@@ -1,15 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class vDestructScrpt : MonoBehaviour
 {
     public bool isParent = false;
+    public GameObject parent;
     public voxelScript voxelScriptRef;
 
     public List<GameObject> cubes;
     Dictionary<GameObject, List<GameObject>> neighborDict = new Dictionary<GameObject, List<GameObject>>();
     List<Vector2Int> jointList = new List<Vector2Int>();
+
+    public AudioClip breakAudio;
+    public AudioSource audioSource;
 
     float destructBreakForce;
     bool useBreakForce;
@@ -22,6 +29,10 @@ public class vDestructScrpt : MonoBehaviour
         {
             destructBreakForce = voxelScriptRef.breakForce;
             useBreakForce = voxelScriptRef.useBreakforce;
+
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.clip = breakAudio;
+            audioSource.playOnAwake = false;
 
             getneighbors();
             getJoints();
@@ -134,6 +145,23 @@ public class vDestructScrpt : MonoBehaviour
                 {
                     joint.breakForce = destructBreakForce;
                     joint.breakTorque = destructBreakForce;
+                }
+            }
+        }
+    }
+
+
+    void OnJointBreak(float breakForce)
+    {
+        if (!isParent)
+        {
+            if (breakAudio != null)
+            {
+                audioSource = parent.GetComponent<AudioSource>();
+
+                if (!audioSource.isPlaying)
+                {
+                    audioSource.Play();
                 }
             }
         }

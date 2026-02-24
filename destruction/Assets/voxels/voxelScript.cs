@@ -38,6 +38,7 @@ public class voxelScript : MonoBehaviour
     public voxeliseOptions voxeliseOption;
     [Header("voxelise option:explode properties")]
     public float explodeForce = 10;
+    public AudioClip explodeAudio;
     [Header("voxelise option:destructible - properties")]
     public bool useBreakforce = true;
     public float breakForce = 250;
@@ -193,7 +194,6 @@ public class voxelScript : MonoBehaviour
 
     static void applyOptions(GameObject target, ref List<GameObject> voxels, string option)
     {
-        print("yoohoo");
         if (option == "combine")
         {
             GameObject parent = new GameObject($"{target.name}_voxelised");
@@ -209,24 +209,7 @@ public class voxelScript : MonoBehaviour
         }
         else if (option == "explode")
         {
-            float explodeForce = target.GetComponent<voxelScript>().explodeForce;
-
-            Destroy(target);
-
-            Vector3 centerOM = Vector3.zero;
-            foreach (GameObject block in voxels)
-            {
-                centerOM += block.transform.position;
-            }
-            centerOM = centerOM / voxels.Count;
-
-            // have blocks explode from center
-            foreach (GameObject block in voxels)
-            {
-                Rigidbody bRB = block.AddComponent<Rigidbody>();
-                Vector3 forceDirection = block.transform.position - centerOM;
-                bRB.velocity = forceDirection.normalized * explodeForce;
-            }
+            explode(target, voxels);
         }
         else if (option == "destructible")
         {
@@ -238,12 +221,16 @@ public class voxelScript : MonoBehaviour
 
                 vDestructScrpt childScript = block.AddComponent<vDestructScrpt>();
                 //childScript.cubes = voxels;
+                childScript.voxelScriptRef = target.GetComponent<voxelScript>();
+                childScript.breakAudio = target.GetComponent<voxelScript>().explodeAudio;
+                childScript.parent = parent;
             }
             
             vDestructScrpt parentScript = parent.AddComponent<vDestructScrpt>();
             parentScript.cubes = voxels;
             parentScript.isParent = true;
             parentScript.voxelScriptRef = target.GetComponent<voxelScript>();
+            parentScript.breakAudio = target.GetComponent<voxelScript>().explodeAudio;
 
             target.SetActive(false);
         }
@@ -252,8 +239,6 @@ public class voxelScript : MonoBehaviour
     static void explode(GameObject target, List<GameObject> voxels)
     {
         float explodeForce = target.GetComponent<voxelScript>().explodeForce;
-
-        Destroy(target);
 
         Vector3 centerOM = Vector3.zero;
         foreach (GameObject block in voxels)
@@ -269,6 +254,24 @@ public class voxelScript : MonoBehaviour
             Rigidbody bRB = block.AddComponent<Rigidbody>();
             Vector3 forceDirection = block.transform.position - centerOM;
             bRB.velocity = forceDirection.normalized * explodeForce;
+        }
+
+        playAudio(target);
+        
+        Destroy(target);
+    }
+
+    public static void playAudio(GameObject target)
+    {
+        if (target.GetComponent<voxelScript>().explodeAudio != null)
+        {
+            GameObject boombox = new GameObject("boomBox");
+            boombox.transform.position = target.transform.position;
+            AudioClip clip = target.GetComponent<voxelScript>().explodeAudio;
+            AudioSource audioSource = boombox.AddComponent<AudioSource>();
+            audioSource.PlayOneShot(clip);
+
+            Destroy(boombox, clip.length + 0.1f);
         }
     }
 }

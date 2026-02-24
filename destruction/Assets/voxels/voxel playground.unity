@@ -138,13 +138,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridList: []
   resolutionBy: 1
-  cubeAmount: 15
+  cubeAmount: 5
   amountAlongAxis: 0
   cubeSize: 1
   voxeliseOnStart: 1
-  hasRigidBody: 0
-  voxeliseOption: 0
+  hasRigidBody: 1
+  voxeliseOption: 2
   explodeForce: 10
+  explodeAudio: {fileID: 8300000, guid: ce95c43b956bb6e43826cd295b967892, type: 3}
   useBreakforce: 1
   breakForce: 250
 --- !u!114 &326306592
@@ -611,7 +612,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f3972b64accd07a48bbd302d6992e08b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 15.4
+      value: 10.19
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f3972b64accd07a48bbd302d6992e08b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -700,6 +701,7 @@ MonoBehaviour:
   hasRigidBody: 1
   voxeliseOption: 0
   explodeForce: 10
+  explodeAudio: {fileID: 0}
   useBreakforce: 1
   breakForce: 250
 --- !u!114 &1422230150
