@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/voxels/voxel playground.unity
+- path: Assets/museum/museum.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0
