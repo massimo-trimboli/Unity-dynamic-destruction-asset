@@ -12,25 +12,30 @@ public class playerScript : MonoBehaviour
     public TMPro.TMP_InputField lookFieldX;
     public TMPro.TMP_InputField lookFieldY;
 
-    bool canLook = true;
+    bool holdingKnife = false;
     bool paused = false;
+
+    [Space(10)]
+    public GameObject knife;
+    public Transform knifeDefaultPos;
+    public Transform knifeHoldPos;
+    public float knifeMoveSpeed = 0.05f;
+    public float knifeRotateSpeed = 1.5f;
+    Vector3 knifePos;
 
 
     private void Start()
     {
         canvas.SetActive(false);
+        knifePos = knifeHoldPos.position;
     }
 
     void Update()
     {
-        if(!paused)
+        if (!paused)
         {
-            if (Input.GetKey(KeyCode.Mouse0))
-                canLook = false;
-            else
-                canLook = true;
-
             move();
+            manipulateKnife();
         }
 
 
@@ -45,7 +50,7 @@ public class playerScript : MonoBehaviour
         Rigidbody rb = GetComponent<Rigidbody>();
 
         // movement
-        Vector3 movement = Vector3.zero;
+        Vector3 movement = new Vector3(0, rb.velocity.y, 0);
         if (Input.GetKey(KeyCode.W))
         {
             movement += transform.forward;
@@ -66,7 +71,7 @@ public class playerScript : MonoBehaviour
 
 
         // look
-        if (canLook )
+        if (!holdingKnife)
         {
             transform.Rotate(0, Input.GetAxis("Mouse X") * lookSensetivityX, 0);
 
@@ -76,6 +81,7 @@ public class playerScript : MonoBehaviour
             camera.transform.localEulerAngles = new Vector3(camRotate, 0, 0);
         }
     }
+
 
     public void pause()
     {
@@ -109,6 +115,69 @@ public class playerScript : MonoBehaviour
             Time.timeScale = 1;
             canvas.SetActive(false);
             paused = false;
+        }
+    }
+
+
+    void manipulateKnife()
+    {
+        //pick up knife
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            holdingKnife = true;
+            knifePos = knifeHoldPos.localPosition;
+        }
+        else if (Input.GetKeyUp(KeyCode.Mouse0))
+        {
+            holdingKnife = false;
+        }
+
+
+        if (holdingKnife)
+        {
+            Vector3 swing = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);
+            swing.x /= 1.95f;
+            swing.y /= 1.95f;
+            knifePos += swing;
+
+            float x = knifePos.x;
+            float y = knifePos.y;
+            x = Mathf.Clamp(x, -2, 3);
+            y = Mathf.Clamp (y, -1.8f, .8f);
+
+            knifePos = new Vector3(x, y, knifePos.z);
+            //print(knifePos);
+        }
+        moveKnife();
+        
+    }
+    void moveKnife()
+    {
+        if (holdingKnife)
+        {
+            knife.transform.localPosition = Vector3.MoveTowards(
+                knife.transform.localPosition,
+                knifePos,
+                knifeMoveSpeed
+            );
+            knife.transform.localEulerAngles = Vector3.MoveTowards(
+                knife.transform.localEulerAngles,
+                knifeHoldPos.localEulerAngles,
+                knifeRotateSpeed
+            );
+        }
+        else
+        {
+            knife.transform.localPosition = Vector3.MoveTowards(
+                knife.transform.localPosition,
+                knifeDefaultPos.localPosition,
+                knifeMoveSpeed
+            );
+            knife.transform.localEulerAngles = Vector3.MoveTowards(
+                knife.transform.localEulerAngles,
+                knifeDefaultPos.localEulerAngles,
+                knifeRotateSpeed
+            );
         }
     }
 }
