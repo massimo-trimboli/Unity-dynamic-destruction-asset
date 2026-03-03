@@ -28,6 +28,9 @@ public class playerScript : MonoBehaviour
     {
         canvas.SetActive(false);
         knifePos = knifeHoldPos.position;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
@@ -50,7 +53,8 @@ public class playerScript : MonoBehaviour
         Rigidbody rb = GetComponent<Rigidbody>();
 
         // movement
-        Vector3 movement = new Vector3(0, rb.velocity.y, 0);
+        //Vector3 movement = new Vector3(0, rb.velocity.y, 0);
+        Vector3 movement = new Vector3(0, 0, 0);
         if (Input.GetKey(KeyCode.W))
         {
             movement += transform.forward;
@@ -67,7 +71,7 @@ public class playerScript : MonoBehaviour
         {
             movement -= transform.right;
         }
-        rb.velocity = movement.normalized * speed;
+        rb.velocity = movement.normalized * speed + new Vector3(0,-1,0);
 
 
         // look
@@ -95,6 +99,9 @@ public class playerScript : MonoBehaviour
             Time.timeScale = 0;
             canvas.SetActive(true);
             paused = true;
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
         else
         {
@@ -111,10 +118,13 @@ public class playerScript : MonoBehaviour
             if (lookSensetivityY == 0)
                 lookSensetivityY = 0.1f;
 
-            //un pause
+            //unpause
             Time.timeScale = 1;
             canvas.SetActive(false);
             paused = false;
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
     }
 
