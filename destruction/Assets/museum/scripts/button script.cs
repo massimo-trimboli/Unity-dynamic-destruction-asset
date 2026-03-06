@@ -16,6 +16,8 @@ public class buttonscript : MonoBehaviour
 
     public GameObject[] bunnies;
     public GameObject[] objsToDestroy;
+    public Rigidbody car;
+    public GameObject wall;
 
 
 
@@ -26,6 +28,8 @@ public class buttonscript : MonoBehaviour
         foreach (Collider knife in knives){
             Physics.IgnoreCollision(knife, border, true);
         }
+
+        //launchCar();
     }
 
     void OnCollisionEnter(Collision collision)
@@ -45,12 +49,22 @@ public class buttonscript : MonoBehaviour
         }
     }
 
-    public void deletePast()
+    public void startPart3()
+    {
+        deletePast();
+        launchCar();
+    }
+    void deletePast()
     {
         foreach(GameObject obj in objsToDestroy)
         {
             Destroy(obj);
         }
+    }
+    void launchCar()
+    {
+        wall.GetComponent<voxelScript>().callVoxelise();
+        car.AddForce(new Vector3(1000,0,0), ForceMode.Impulse);
     }
 
 }
