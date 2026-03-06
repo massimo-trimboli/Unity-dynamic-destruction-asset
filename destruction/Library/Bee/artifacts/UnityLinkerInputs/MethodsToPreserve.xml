@@ -1,0 +1,18 @@
+<linker>
+	<assembly fullname="Assembly-CSharp" ignoreIfMissing="1">
+		<type fullname="buttonscript">
+			<method name="resetBunnies"/>
+			<method name="startPart3"/>
+		</type>
+		<type fullname="playerScript">
+			<method name="pause"/>
+			<method name="pause"/>
+			<method name="pause"/>
+		</type>
+		<type fullname="resetScript">
+			<method name="resetScene"/>
+			<method name="resetScene"/>
+			<method name="resetScene"/>
+		</type>
+	</assembly>
+</linker>
