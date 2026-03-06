@@ -1845,6 +1845,7 @@ GameObject:
   - component: {fileID: 5099471059526837985}
   - component: {fileID: 4993672040759902938}
   - component: {fileID: 1387560343416584736}
+  - component: {fileID: 2690634645062827980}
   m_Layer: 0
   m_Name: player
   m_TagString: Untagged
@@ -1994,6 +1995,30 @@ MonoBehaviour:
   knifeDefaultPos: {fileID: 1422576220282548216}
   knifeHoldPos: {fileID: 4026558825663241359}
   knifeMoveSpeed: 0.2
+  knifeRotateSpeed: 1.5
+--- !u!114 &2690634645062827980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7627887953403962012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23170a1cf9e9bc44c8d51e6f40f95cfc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 0
+  lookSensetivityX: 1
+  lookSensetivityY: 1
+  camera: {fileID: 0}
+  canvas: {fileID: 0}
+  lookFieldX: {fileID: 0}
+  lookFieldY: {fileID: 0}
+  knife: {fileID: 0}
+  knifeDefaultPos: {fileID: 0}
+  knifeHoldPos: {fileID: 0}
+  knifeMoveSpeed: 0.05
   knifeRotateSpeed: 1.5
 --- !u!1 &7644403216345752842
 GameObject:
