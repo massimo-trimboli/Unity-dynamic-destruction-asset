@@ -16,9 +16,11 @@ public class buttonscript : MonoBehaviour
 
     public GameObject[] bunnies;
     public GameObject[] objsToDestroy;
+    public GameObject objToSpawn;
     public Rigidbody car;
     public GameObject wall;
 
+    bool shitHappenedOnce = false;
 
 
     void Start()
@@ -51,8 +53,14 @@ public class buttonscript : MonoBehaviour
 
     public void startPart3()
     {
-        deletePast();
-        launchCar();
+        if (!shitHappenedOnce)
+        {
+            deletePast();
+            spawnNew();
+            launchCar();
+
+            shitHappenedOnce = true;
+        }
     }
     void deletePast()
     {
@@ -65,6 +73,10 @@ public class buttonscript : MonoBehaviour
     {
         wall.GetComponent<voxelScript>().callVoxelise();
         car.AddForce(new Vector3(1000,0,0), ForceMode.Impulse);
+    }
+    void spawnNew()
+    {
+        objToSpawn.SetActive(true);
     }
 
 }

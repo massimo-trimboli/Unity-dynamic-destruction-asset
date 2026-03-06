@@ -6,9 +6,11 @@ using UnityEngine.SceneManagement;
 public class resetScript : MonoBehaviour
 {
     public static bool playerSpawned = false;
-    
+
     public GameObject player;
     public GameObject playerNoCut;
+
+    public GameObject button;
 
     static GameObject activePlayer;
     static string activePlayerName;

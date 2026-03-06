@@ -20,6 +20,8 @@ public class vTextureScrpt : MonoBehaviour
         {
             GetComponent<MeshRenderer>().material = material;
             texture = (Texture2D)material.mainTexture;
+            //texture = (Texture2D)GetComponent<MeshRenderer>().material.mainTexture;
+            
             if (texture == null)
             {
                 Debug.LogError("Texture is null or not Texture2D");
