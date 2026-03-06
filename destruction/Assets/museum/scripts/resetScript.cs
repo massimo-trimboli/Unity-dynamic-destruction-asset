@@ -25,9 +25,10 @@ public class resetScript : MonoBehaviour
         {
             //default on scene start
             activePlayer = player;
-            activePlayerName = player.name;
-            playerPos = player.transform.position;
-            playerRot = player.transform.localRotation;
+            //activePlayer = playerNoCut;
+            activePlayerName = activePlayer.name;
+            playerPos = activePlayer.transform.position;
+            playerRot = activePlayer.transform.localRotation;
 
             setPlayer();
         }
