@@ -8,4 +8,6 @@
 <br> <br> <br>
 ------------------------
 <br>
+made for a school project
+<br>
 these assets were made in unity version 2023.2.20f1
